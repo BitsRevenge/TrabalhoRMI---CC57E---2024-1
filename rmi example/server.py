@@ -9,6 +9,9 @@ class ChatBox(object):
     def __init__(self):
         self.channels = {}  # registered channels { channel --> (nick, client callback) list }
         self.nicks = []  # all registered nicks on this server
+        self.channel_owners = {}  # channel owners { channel: nick }
+        self.channel_permissions = {}  # channel permissions { channel: [nicks] }
+        self.dm_channels = {}
 
     def getChannels(self):
         return list(self.channels.keys())
@@ -18,12 +21,17 @@ class ChatBox(object):
 
     def join(self, channel, nick, callback):
         if not channel or not nick:
-            raise ValueError("invalid channel or nick name")
+            return "Invalid channel or nick name."
         if nick in self.nicks:
-            raise ValueError('this nick is already in use')
+            return "This nick is already in use."
         if channel not in self.channels:
             print('CREATING NEW CHANNEL %s' % channel)
             self.channels[channel] = []
+            self.channel_owners[channel] = nick  # Set the creator as the owner
+            self.channel_permissions[channel] = [nick]  # Creator has permission
+        elif nick not in self.channel_permissions[channel]:
+            return "You do not have permission to join this channel."
+        
         self.channels[channel].append((nick, callback))
         self.nicks.append(nick)
         print("%s JOINED %s" % (nick, channel))
@@ -41,6 +49,8 @@ class ChatBox(object):
         self.publish(channel, 'SERVER', '** ' + nick + ' left **')
         if len(self.channels[channel]) < 1:
             del self.channels[channel]
+            del self.channel_owners[channel]  # Remove the owner when the channel is empty
+            del self.channel_permissions[channel]  # Remove permissions
             print('REMOVED CHANNEL %s' % channel)
         self.nicks.remove(nick)
         print("%s LEFT %s" % (nick, channel))
@@ -60,6 +70,14 @@ class ChatBox(object):
                     print('Removed dead listener %s %s' % (n, c))
 
 
+    def add_permission(self, channel, owner, nick_to_add):
+        if channel not in self.channel_owners or self.channel_owners[channel] != owner:
+            return "Only the channel owner can add permissions."
+        if nick_to_add in self.channel_permissions[channel]:
+            return f"{nick_to_add} already has permission."
+        self.channel_permissions[channel].append(nick_to_add)
+        return f"Permission added for {nick_to_add}."
+    
 if __name__ == "__main__":
     # Locate the Pyro nameserver
     try:
