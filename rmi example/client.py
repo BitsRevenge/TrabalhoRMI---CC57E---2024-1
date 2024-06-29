@@ -45,17 +45,27 @@ class Chatter(object):
         people = result
         print('Joined channel %s as %s' % (self.channel, self.nick))
         print('People on this channel: %s' % (', '.join(people)))
-        print('Ready for input! Type /quit to quit, /add <nick> to add permission, /dm <nick> to start a DM')
+        print('Ready for input! Type /quit to quit, /add <nick> to add permission, /dm <nick> <message> to DM someone')
         try:
             try:
                 while not self.abort:
                     line = input('> ').strip()
                     if line == '/quit':
-                        break
-                    if line.startswith('/add '):
+                        self.chatbox.leave(self.channel, self.nick)
+                        self.start()
+                    elif line.startswith('/add '):
                         nick_to_add = line.split()[1]
                         message = self.chatbox.add_permission(self.channel, self.nick, nick_to_add)
                         print(message)
+                    elif line.startswith('/dm '):
+                        parts = line.split(' ', 2)
+                        if len(parts) >= 3:
+                            nick_to_dm = parts[1]
+                            dm_message = parts[2]
+                            result = self.chatbox.send_dm(self.nick, nick_to_dm, dm_message)
+                            print(result)
+                        else:
+                            print("Invalid DM format. Use: /dm <nick> <message>")
                     elif line:
                         self.chatbox.publish(self.channel, self.nick, line)
             except EOFError:

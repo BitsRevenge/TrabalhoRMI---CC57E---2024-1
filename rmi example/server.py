@@ -8,7 +8,7 @@ import Pyro4
 class ChatBox(object):
     def __init__(self):
         self.channels = {}  # registered channels { channel --> (nick, client callback) list }
-        self.nicks = []  # all registered nicks on this server
+        self.nicks = {}  # all registered nicks on this server {nick: callback}
         self.channel_owners = {}  # channel owners { channel: nick }
         self.channel_permissions = {}  # channel permissions { channel: [nicks] }
         self.dm_channels = {}
@@ -17,7 +17,7 @@ class ChatBox(object):
         return list(self.channels.keys())
 
     def getNicks(self):
-        return self.nicks
+        return list(self.nicks.keys())
 
     def join(self, channel, nick, callback):
         if not channel or not nick:
@@ -33,7 +33,7 @@ class ChatBox(object):
             return "You do not have permission to join this channel."
         
         self.channels[channel].append((nick, callback))
-        self.nicks.append(nick)
+        self.nicks[nick] = callback
         print("%s JOINED %s" % (nick, channel))
         self.publish(channel, 'SERVER', '** ' + nick + ' joined **')
         return [nick for (nick, c) in self.channels[channel]]  # return all nicks in this channel
@@ -52,7 +52,7 @@ class ChatBox(object):
             del self.channel_owners[channel]  # Remove the owner when the channel is empty
             del self.channel_permissions[channel]  # Remove permissions
             print('REMOVED CHANNEL %s' % channel)
-        self.nicks.remove(nick)
+        del self.nicks[nick]
         print("%s LEFT %s" % (nick, channel))
 
     def publish(self, channel, nick, msg):
@@ -69,6 +69,14 @@ class ChatBox(object):
                     self.channels[channel].remove((n, c))
                     print('Removed dead listener %s %s' % (n, c))
 
+    def send_dm(self, from_nick, to_nick, message):
+        if to_nick not in self.nicks:
+            return f"User {to_nick} not found."
+        try:
+            self.nicks[to_nick].message(from_nick, f"DM from {from_nick}: {message}")
+        except Pyro4.errors.ConnectionClosedError:
+            return f"Failed to send DM to {to_nick}."
+        return f"DM sent to {to_nick}."
 
     def add_permission(self, channel, owner, nick_to_add):
         if channel not in self.channel_owners or self.channel_owners[channel] != owner:
@@ -77,7 +85,7 @@ class ChatBox(object):
             return f"{nick_to_add} already has permission."
         self.channel_permissions[channel].append(nick_to_add)
         return f"Permission added for {nick_to_add}."
-    
+
 if __name__ == "__main__":
     # Locate the Pyro nameserver
     try:
