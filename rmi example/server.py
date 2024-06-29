@@ -1,5 +1,5 @@
 import Pyro4
-
+from datetime import datetime
 
 # Chat box administration server.
 # Handles logins, logouts, channels and nicknames, and the chatting.
@@ -11,13 +11,21 @@ class ChatBox(object):
         self.nicks = {}  # all registered nicks on this server {nick: callback}
         self.channel_owners = {}  # channel owners { channel: nick }
         self.channel_permissions = {}  # channel permissions { channel: [nicks] }
-        self.dm_channels = {}
+        self.dm_channels = {}  # private channels for DMs { (nick1, nick2): [callback1, callback2] }
+        self.log_file = "chat_log.txt"
+
+    def log_message(self, channel, nick, msg):
+        with open(self.log_file, "a") as f:
+            f.write(f"{datetime.now()} - [{channel}] {nick}: {msg}\n")
 
     def getChannels(self):
         return list(self.channels.keys())
 
     def getNicks(self):
         return list(self.nicks.keys())
+
+    def getDMChannels(self):
+        return list(self.dm_channels.keys())
 
     def join(self, channel, nick, callback):
         if not channel or not nick:
@@ -59,6 +67,7 @@ class ChatBox(object):
         if channel not in self.channels:
             print('IGNORED UNKNOWN CHANNEL %s' % channel)
             return
+        self.log_message(channel, nick, msg)
         for (n, c) in self.channels[channel][:]:  # use a copy of the list
             try:
                 c.message(nick, msg)  # oneway call
@@ -69,13 +78,22 @@ class ChatBox(object):
                     self.channels[channel].remove((n, c))
                     print('Removed dead listener %s %s' % (n, c))
 
+    def create_dm_channel(self, nick1, nick2):
+        channel_key = tuple(sorted((nick1, nick2)))
+        if channel_key not in self.dm_channels:
+            self.dm_channels[channel_key] = [self.nicks[nick1], self.nicks[nick2]]
+        return channel_key
+
     def send_dm(self, from_nick, to_nick, message):
         if to_nick not in self.nicks:
             return f"User {to_nick} not found."
-        try:
-            self.nicks[to_nick].message(from_nick, f"DM from {from_nick}: {message}")
-        except Pyro4.errors.ConnectionClosedError:
-            return f"Failed to send DM to {to_nick}."
+        channel_key = self.create_dm_channel(from_nick, to_nick)
+        self.log_message(f"DM {channel_key[0]}-{channel_key[1]}", from_nick, message)
+        for callback in self.dm_channels[channel_key]:
+            try:
+                callback.message(from_nick, f"DM from {from_nick}: {message}")
+            except Pyro4.errors.ConnectionClosedError:
+                return f"Failed to send DM to {to_nick}."
         return f"DM sent to {to_nick}."
 
     def add_permission(self, channel, owner, nick_to_add):

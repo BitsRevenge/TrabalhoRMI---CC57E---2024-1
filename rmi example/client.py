@@ -11,6 +11,7 @@ import Pyro4
 # callback messages while the main thread is processing user input.
 
 
+
 class Chatter(object):
     def __init__(self):
         self.chatbox = Pyro4.core.Proxy('PYRONAME:example.chatbox.server')
@@ -45,7 +46,7 @@ class Chatter(object):
         people = result
         print('Joined channel %s as %s' % (self.channel, self.nick))
         print('People on this channel: %s' % (', '.join(people)))
-        print('Ready for input! Type /quit to quit, /add <nick> to add permission, /dm <nick> <message> to DM someone')
+        print('Ready for input! Type /quit to quit, /add <nick> to add permission, or /dm <nick> <message> to send a DM')
         try:
             try:
                 while not self.abort:
@@ -59,13 +60,16 @@ class Chatter(object):
                         print(message)
                     elif line.startswith('/dm '):
                         parts = line.split(' ', 2)
-                        if len(parts) >= 3:
+                        if len(parts) == 3:
                             nick_to_dm = parts[1]
                             dm_message = parts[2]
                             result = self.chatbox.send_dm(self.nick, nick_to_dm, dm_message)
                             print(result)
                         else:
                             print("Invalid DM format. Use: /dm <nick> <message>")
+                        
+                        dm_channels = self.chatbox.getDMChannels()
+                        print(dm_channels)
                     elif line:
                         self.chatbox.publish(self.channel, self.nick, line)
             except EOFError:
