@@ -1,6 +1,18 @@
-## 💻 Pré-requisitos
+## Estrutura do Projeto
 
-Antes de começar, verifique se você atendeu aos seguintes requisitos:
+- `telas/`: desenvolvimento das telas.
+- `main.py`: Ponto de entrada do programa rodar as telas.
+- `server.py`: Inicializa o servidor.
+  - Rodar `python -m Pyro4.naming`
+- `client.py`: Cria a instancia do cliente.
 
-- Você instalou a versão mais recente de `pip install Pyro4`
-- Antes de rodar o servidor, digite no terminal: `python -m Pyro4.naming`
+# Como Executar
+
+1. Certifique-se de ter o Python instalado.
+2. Instale as dependências:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Execute o a arquivo `main.py`.
+
+   
