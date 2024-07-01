@@ -13,7 +13,7 @@ class ChatBox(object):
         self.channels = {}  # registered channels { channel --> (nick, client callback) list }
         self.config = {
             'user': 'root',
-            'password': '1234',
+            'password': SENHA,
             'host': '127.0.0.1',
             'database': 'db_dadosRMI',
         }
