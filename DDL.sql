@@ -6,6 +6,7 @@ create table tb_usuario (
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
     senha VARCHAR(50) NOT NULL,
+    estado int not null default 0,
     primary key (id_user)
 );
 
@@ -21,6 +22,7 @@ create table tb_servidor_grupo (
 
 create table tb_grupo (
 	servidor_id_grupo int not null,
+    nome_grupo varchar(100)not null,
     servidor_id_user int not null,
 	CONSTRAINT servidorID_grupo
 		FOREIGN KEY ( servidor_id_grupo )
