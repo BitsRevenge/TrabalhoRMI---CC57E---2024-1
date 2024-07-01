@@ -1,0 +1,63 @@
+#:include listagem listagempessoas.TelaPessoas
+
+<TelaLogin>
+    name: "login"
+    FloatLayout:
+        id: login
+        orinetation: "vertical"
+
+        MDLabel:
+            text: "WhatUs"
+            font_style: "H4"
+            bold: True
+            halign: "center"
+            pos_hint: {"center_x": 0.5, "center_y": 0.8}
+
+        MDLabel:
+            text: "Login"
+            font_style: "H5"
+            bold: True
+            halign: "center"
+            pos_hint: {"center_x": 0.5, "center_y": 0.7}
+
+
+        MDTextField:
+            id: email
+            hint_text: "Email"
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            size_hint_x: 0.7
+            icon_right: "email"
+            icon_right_color: app.theme_cls.primary_color
+
+        MDTextField:
+            id: senha
+            hint_text: "Senha"
+            pos_hint: {"center_x": 0.5, "center_y": 0.4}
+            size_hint_x: 0.7
+            password: True
+            icon_right: "lock"
+            icon_right_color: app.theme_cls.primary_color
+
+        MDRaisedButton:
+            id: btn_login
+            text: "Entrar"
+            elevation: 0
+            pos_hint: {"center_x": 0.5, "center_y": 0.3}
+            on_release:
+                root.criar_instancia_user()
+
+
+        MDTextButton:
+            text: "Registrar"
+            pos_hint: {"center_x": 0.5, "center_y": 0.1}
+            on_release:
+                root.manager.transition.direction = "left"
+                root.manager.current = "registrar"
+
+        MDTextButton:
+            text: "Esqueci minha senha"
+            pos_hint: {"center_x": 0.5, "center_y": 0.05}
+            on_release:
+                root.manager.transition.direction = "left"
+                root.manager.current = "esqsenha"
+

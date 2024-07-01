@@ -1,0 +1,20 @@
+<TelaGrupos>
+    name: "grupos"
+
+    MDBoxLayout:
+        orientation: 'vertical'
+        MDTopAppBar:
+            icon: "account-badge"
+            elevation:0
+            type: "top"
+            right_action_items:[["home", lambda x: root.tela_login(), "Home"], ["account-badge", lambda x: root.tela_pessoas(), "Pessoas Online"],["account-group", lambda x: root.tela_grupos(), "Grupos"]]
+
+        ScrollView:
+            MDList:
+                id: listagem
+
+        MDFloatingActionButton:
+            icon: "account-multiple-plus-outline"
+            pos_hint: {"center_x": 0.9, "center_y": 0.1}
+            on_release:
+                root.create_group()
