@@ -10,38 +10,11 @@ from telas.listagempessoas.telapessoas import TelaPessoas
 
 class TelaLogin(MDScreen):
     pass
-
-    # def connect(self):
-    #
-    #     input_email = self.ids["email"].text
-    #     input_senha = self.ids["senha"].text
-    #
-    #     config = {
-    #         'user': 'root',
-    #         'password': '1234',
-    #         'host': '127.0.0.1',
-    #         'database': 'db_dadosRMI',
-    #     }
-    #     conn = mysql.connector.connect(**config)
-    #     cursor = conn.cursor()
-    #
-    #     try:
-    #         query = "SELECT count(*) FROM tb_usuario WHERE email = %s AND senha = %s"
-    #         cursor.execute(query, (input_email, input_senha))
-    #         dados = cursor.fetchall()
-    #         if dados[0][0] == 1:
-    #             toast("Login!")
-    #         else:
-    #             toast("Email ou senha inválidos")
-    #
-    #     except:
-    #         toast("Email ou senha inválidos")
-
     def criar_instancia_user(self):
 
         config = {
             'user': 'root',
-            'password': '1234',
+            'password': SENHA,
             'host': '127.0.0.1',
             'database': 'db_dadosRMI',
         }
