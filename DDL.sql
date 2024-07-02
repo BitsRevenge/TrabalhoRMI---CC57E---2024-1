@@ -45,5 +45,16 @@ create table tb_servidor_privado (
 		REFERENCES tb_usuario( id_user)
 );
 
+create table tb_permissao (
+    id_usuario int not null,
+    id_grupo int not null,
+	CONSTRAINT id_usuario
+		FOREIGN KEY ( id_usuario )
+		REFERENCES tb_usuario( id_user),
+	CONSTRAINT id_grupo
+		FOREIGN KEY ( id_grupo )
+		REFERENCES tb_grupo ( servidor_id_grupo)
+);
+
 DROP DATABASE db_dadosRMI;
 

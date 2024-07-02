@@ -31,13 +31,13 @@ class Chatter(object):
 
     def build(self, nomes, nome_user):
         if nomes:
-
             pass
         self.nick = nome_user
         people = self.chatbox.join("servidor", self.nick, self)
 
     def destruir_instancia(self):
         self.abort = 1
+
 
 
 class DaemonThread(threading.Thread):
