@@ -169,10 +169,10 @@ class ChatBox(object):
             if (usuario1 in tupla):
                 pos = indice
                 break
-        # try:
-        self.channels[nome_grupo].append((usuario1, self.instance_user[pos][1]))
-        # except:
-        #     return "Deu problemas"
+        try:
+            self.channels[nome_grupo].append((usuario1, self.instance_user[pos][1]))
+        except:
+            return None
 
 
     def create_group(self, nome_grupo, usuario_adm, descricao=None):
@@ -253,8 +253,8 @@ class ChatBox(object):
 if __name__ == "__main__":
     # Locate the Pyro nameserver
     try:
-        daemon = Pyro4.Daemon(host="localhost", port=9090)
-        ns = Pyro4.locateNS(host='localhost', port=9090)  # Ensure these match your nameserver settings
+        daemon = Pyro4.Daemon(host="26.241.131.227")
+        ns = Pyro4.locateNS(host="26.241.131.227")  # Ensure these match your nameserver settings
         print("Nameserver located.")
     except Pyro4.errors.NamingError as e:
         print("Failed to locate the nameserver: ", e)

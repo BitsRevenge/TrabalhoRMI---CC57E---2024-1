@@ -7,7 +7,7 @@
             icon: "account-badge"
             elevation:0
             type: "top"
-            right_action_items:[["home", lambda x: root.tela_login(), "Home"], ["account-badge", lambda x: root.tela_pessoas(), "Pessoas Online"],["account-group", lambda x: root.tela_grupos(), "Grupos"],["account-multiple-plus", lambda x: app.create_group(), "Add Grupo"], ["refresh", lambda x: root.reload(), "Atualizar"]]
+            right_action_items:[["home", lambda x: app.set_peesoa_off(), "Home"], ["account-badge", lambda x: root.tela_pessoas(), "Pessoas Online"],["account-group", lambda x: root.tela_grupos(), "Grupos"],["account-multiple-plus", lambda x: app.create_group(), "Add Grupo"], ["refresh", lambda x: root.recarregar(), "Atualizar"]]
 
         ScrollView:
             MDList:

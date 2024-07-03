@@ -14,20 +14,16 @@ class TelaPessoas(MDScreen):
     cursor = conn.cursor()
 
     def on_pre_enter(self):
-        pessoas_cad = self.getNicks()
         pessoas_on = self.get_pessoas_on()
         pessoas_on = [i[0] for i in pessoas_on]
-        pessoas = [i[0] for i in pessoas_cad]
         self.ids.listagem.clear_widgets()
-        for pessoa in pessoas:
+        for pessoa in pessoas_on:
             if pessoa in pessoas_on:
                 card = OneLineAvatarIconListItem(IconLeftWidget(
                                                  icon="assets/imagens/button.png"),
                                              text=f"{pessoa}")
-            else:
-                card = OneLineAvatarIconListItem(text=f"{pessoa}")
-            card.bind(on_release=self.on_item_click)
-            self.ids.listagem.add_widget(card)
+                card.bind(on_release=self.on_item_click)
+                self.ids.listagem.add_widget(card)
 
     def getNicks(self):
         self.cursor.execute("SELECT nome FROM tb_usuario")

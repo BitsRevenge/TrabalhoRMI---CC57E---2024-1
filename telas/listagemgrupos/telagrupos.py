@@ -102,9 +102,11 @@ class TelaGrupos(MDScreen):
         variaveis_globais.nome_grupo = name
 
         self.close_dialog()
+        self.manager.transition.direction = "right"
+        self.manager.current = "conversa"
 
 
-    def reload(self):
+    def recarregar(self):
         self.on_pre_enter()
     def on_item_click(self, instance):
 
@@ -141,5 +143,11 @@ class TelaGrupos(MDScreen):
                         """
         self.cursor.execute(query, (servidor_id_grupo, servidor_id_user))
         self.conn.commit()
+
+        variaveis_globais.instancia_grupo = self.instancia
+        self.close_dialog()
+
+        self.manager.transition.direction = "right"
+        self.manager.current = "conversa"
 
     pass

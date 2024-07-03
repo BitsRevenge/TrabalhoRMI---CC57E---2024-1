@@ -66,6 +66,8 @@ class LiveApp(MDApp, App):
         self.sm = MDScreenManager()
         self.chatter = Chatter(nome_user=variaveis_globais.nome_user)
         self.daemonthread = DaemonThread(self.chatter)
+        self.conn = mysql.connector.connect(**variaveis_globais.config)
+        self.cursor = self.conn.cursor()
 
     def build_app(self, **kwargs):
         self.theme_cls.primary_palette= "DeepPurple"
@@ -92,19 +94,22 @@ class LiveApp(MDApp, App):
             else:  # Assume Linux
                 subprocess.run(["xdg-open", "."])
 
-    def criar_instancia_user(self):
+    def get_pessoas_on(self):
+        query = "SELECT nome FROM tb_usuario WHERE estado = 1"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
 
-        # try:
-        # if dados[0][0] in pessoas_on:
-        #     self.chat.leave(variaveis_globais.nome_user)
-        #     chatter.destruir_instancia()
-        #     chatter.start()
-        # else:
+    def criar_instancia_user(self):
+        pessoas_on = self.get_pessoas_on()
+        pessoas_on = [i[0] for i in pessoas_on]
         try:
-            self.daemonthread.start()
-            self.chatter.start()
+            if variaveis_globais.nome_user in pessoas_on:
+                self.chatter.destruir_instancia()
+                self.daemonthread.start()
+                self.chatter.start()
         except:
             pass
+
 
     def getNomes(self):
         return self.chatter.getNomes()
@@ -161,6 +166,19 @@ class LiveApp(MDApp, App):
 
     def criar_grupo(self, nome_grupo, nome_user, descricao):
         self.chatter.create_group(nome_grupo, nome_user, descricao)
+
+    def entrar_grupo(self):
+        self.chatter.entrar_grupo(variaveis_globais.instancia_grupo, variaveis_globais.nome_user)
+
+    def set_peesoa_off(self):
+        self.chatter.destruir_instancia()
+        sql = "UPDATE tb_usuario SET estado = False WHERE nome = %s"
+        self.cursor.execute(sql, (variaveis_globais.nome_user,))
+        self.conn.commit()
+        self.sm.current = "login"
+
+
+
 
 
 # finally, run the app

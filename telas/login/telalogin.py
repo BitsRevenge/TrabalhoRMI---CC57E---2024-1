@@ -21,13 +21,14 @@ class TelaLogin(MDScreen):
         cursor = conn.cursor()
 
         try:
-            query = "SELECT count(*) FROM tb_usuario WHERE email = %s AND senha = %s"
+            query = "SELECT nome FROM tb_usuario WHERE email = %s AND senha = %s"
             cursor.execute(query, (input_email, input_senha))
             dados = cursor.fetchall()
         except:
             pass
         else:
             variaveis_globais.nome_user = dados[0][0]
+            print(variaveis_globais.nome_user)
 
     # def connect(self):
     #

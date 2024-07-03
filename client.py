@@ -23,10 +23,11 @@ import variaveis_globais
 class Chatter(object):
 
     def __init__(self, nome_user):
-        ns = Pyro4.locateNS(host="localhost", port=9090)
+        ns = Pyro4.locateNS(host="26.241.131.227")
         uri = ns.lookup("example.chatbox.server")
         self.chatbox = Pyro4.core.Proxy(uri)
         self.abort = 0
+        self.nick = nome_user
 
     @Pyro4.expose
     @Pyro4.oneway
@@ -34,14 +35,16 @@ class Chatter(object):
         if nick != self.nick:
             print('[{0}] {1}'.format(nick, msg))
 
-    @Pyro4.expose
     def start(self):
-        self.nick = variaveis_globais.nome_user
         callback = self.get_self()
         self.chatbox.join(self.nick, callback)
 
     def create_group(self, nome_grupo, usuario_adm, descricao=None):
         self.chatbox.create_group(nome_grupo, usuario_adm, descricao)
+
+    def entrar_grupo(self, nome_grupo, usuario1):
+        self.chatbox.enter_group(nome_grupo, self.nick)
+
 
     def create_chat(self, usuario1):
         self.chatbox.create_chat_privado(usuario1, "1")
