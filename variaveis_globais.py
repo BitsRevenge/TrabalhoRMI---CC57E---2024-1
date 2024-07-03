@@ -10,7 +10,7 @@ mensagem = ""
 
 config = {
             'user': 'root',
-            'password': "1234",
+            'password': SENHA,
             'host': '127.0.0.1',
             'database': 'db_dadosRMI',
         }
