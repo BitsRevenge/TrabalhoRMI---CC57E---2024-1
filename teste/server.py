@@ -67,8 +67,8 @@ class ChatBox(object):
 if __name__ == "__main__":
     # Locate the Pyro nameserver
     try:
-        daemon = Pyro4.Daemon(host="26.241.131.227")
-        ns = Pyro4.locateNS(host='26.241.131.227', port=9090)  # Ensure these match your nameserver settings
+        daemon = Pyro4.Daemon(host="localhost")
+        ns = Pyro4.locateNS(host='localhost', port=9090)  # Ensure these match your nameserver settings
         print("Nameserver located.")
     except Pyro4.errors.NamingError as e:
         print("Failed to locate the nameserver: ", e)
@@ -78,7 +78,7 @@ if __name__ == "__main__":
     uri = daemon.register(ChatBox)
 
     # Register the object with the nameserver
-    ns.register("example.service", uri)
+    ns.register("eexample.chatbox.server", uri)
 
     print("ChatBox server is running.")
 

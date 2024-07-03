@@ -44,8 +44,10 @@
             elevation: 0
             pos_hint: {"center_x": 0.5, "center_y": 0.3}
             on_release:
-                root.criar_instancia_user()
-
+                root.retornar_fields()
+                app.criar_instancia_user()
+                root.manager.transition.direction = "left"
+                root.manager.current = "pessoas"
 
         MDTextButton:
             text: "Registrar"

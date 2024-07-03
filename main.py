@@ -9,10 +9,14 @@ from kivymd.app import MDApp
 from kaki.app import App
 from kivy.factory import Factory
 import chardet
+from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.dialog import MDDialog
 from kivymd.uix.screenmanager import MDScreenManager
+from kivymd.uix.textfield import MDTextField
 
-from server import ChatBox
+import variaveis_globais
+from client import Chatter, DaemonThread
 from telas.escolherArquivo import FileChooserPopup
 from telas.esquecisenha.esquecisenha import TelaEsqSenha
 from telas.listagemgrupos.telagrupos import TelaGrupos
@@ -21,7 +25,7 @@ from telas.login.telalogin import TelaLogin
 from telas.registrar.telaregistrar import TelaRegistrar
 from telas.telaconversa.telaconversa import TelaConversa
 from telas.telamanager import MainScreenManager
-
+import mysql.connector
 
 class LiveApp(MDApp, App):
 
@@ -54,10 +58,14 @@ class LiveApp(MDApp, App):
         (".", {"recursive": True}),
     ]
 
+    dialog = None
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.load_all_kv_files(self.directory)
         self.sm = MDScreenManager()
+        self.chatter = Chatter(nome_user=variaveis_globais.nome_user)
+        self.daemonthread = DaemonThread(self.chatter)
 
     def build_app(self, **kwargs):
         self.theme_cls.primary_palette= "DeepPurple"
@@ -83,6 +91,76 @@ class LiveApp(MDApp, App):
                 subprocess.run(["open", "."])
             else:  # Assume Linux
                 subprocess.run(["xdg-open", "."])
+
+    def criar_instancia_user(self):
+
+        # try:
+        # if dados[0][0] in pessoas_on:
+        #     self.chat.leave(variaveis_globais.nome_user)
+        #     chatter.destruir_instancia()
+        #     chatter.start()
+        # else:
+        try:
+            self.daemonthread.start()
+            self.chatter.start()
+        except:
+            pass
+
+    def getNomes(self):
+        return self.chatter.getNomes()
+
+    def getGrupos(self):
+        return self.chatter.getGrupos()
+
+    def send_message_chat_privado(self):
+        self.chatter.send_message(variaveis_globais.mensagem)
+
+    def create_group(self):
+        if not self.dialog:
+            self.dialog = MDDialog(
+                title="Insira os Detalhes",
+                type="custom",
+                content_cls=MDBoxLayout(
+                    MDTextField(
+                        hint_text="Nome do grupo",
+                    ),
+                    MDTextField(
+                        hint_text="Descrição do grupo",
+                    ),
+                    orientation="vertical",
+                    spacing="12dp",
+                    size_hint_y=None,
+                    height="120dp",
+                ),
+                buttons=[
+                    MDRaisedButton(
+                        text="Cancelar",
+                        on_release=self.close_dialog
+                    ),
+                    MDRaisedButton(
+                        text="Criar",
+                        on_release=self.save_details
+                    ),
+                ],
+            )
+        self.dialog.open()
+
+    def close_dialog(self, *args):
+        self.dialog.dismiss()
+        self.dialog = None
+
+
+    def save_details(self, *args):
+        name_field = self.dialog.content_cls.children[1]
+        description_field = self.dialog.content_cls.children[0]
+        name = name_field.text
+        description = description_field.text
+
+        self.criar_grupo(name, variaveis_globais.nome_user, description)
+        self.close_dialog()
+
+    def criar_grupo(self, nome_grupo, nome_user, descricao):
+        self.chatter.create_group(nome_grupo, nome_user, descricao)
 
 
 # finally, run the app

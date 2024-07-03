@@ -3,6 +3,9 @@ from kivy.app import App
 from kivymd.toast import toast
 from kivymd.uix.screen import MDScreen
 
+import variaveis_globais
+
+
 class TelaRegistrar(MDScreen):
     pass
     def connect(self):
@@ -10,13 +13,8 @@ class TelaRegistrar(MDScreen):
         input_email = self.ids["email"].text
         input_senha = self.ids["senha"].text
 
-        config = {
-            'user': 'root',
-            'password': '1234',
-            'host': '127.0.0.1',
-            'database': 'db_dadosRMI',
-        }
-        conn = mysql.connector.connect(**config)
+
+        conn = mysql.connector.connect(**variaveis_globais.config)
         cursor = conn.cursor()
 
         if input_nome != "" and input_email != "" and input_senha != "":

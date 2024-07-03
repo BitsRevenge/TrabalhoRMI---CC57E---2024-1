@@ -17,10 +17,15 @@ from kivy.app import runTouchApp
 
 import mysql.connector
 
+import variaveis_globais
+
+
 class Chatter(object):
 
-    def __init__(self):
-        self.chatbox = Pyro4.core.Proxy('PYRONAME:example.chatbox.server')
+    def __init__(self, nome_user):
+        ns = Pyro4.locateNS(host="localhost", port=9090)
+        uri = ns.lookup("example.chatbox.server")
+        self.chatbox = Pyro4.core.Proxy(uri)
         self.abort = 0
 
     @Pyro4.expose
@@ -29,12 +34,29 @@ class Chatter(object):
         if nick != self.nick:
             print('[{0}] {1}'.format(nick, msg))
 
-    def build(self, nomes, nome_user):
-        if nomes:
+    @Pyro4.expose
+    def start(self):
+        self.nick = variaveis_globais.nome_user
+        callback = self.get_self()
+        self.chatbox.join(self.nick, callback)
 
-            pass
-        self.nick = nome_user
-        people = self.chatbox.join("servidor", self.nick, self)
+    def create_group(self, nome_grupo, usuario_adm, descricao=None):
+        self.chatbox.create_group(nome_grupo, usuario_adm, descricao)
+
+    def create_chat(self, usuario1):
+        self.chatbox.create_chat_privado(usuario1, "1")
+
+    def getNomes(self):
+        return self.chatbox.getNicks()
+
+    def getGrupos(self):
+        return self.chatbox.getGrupos()
+
+    def send_message(self, mensagem):
+        self.chatbox.send_message_chat_privado(self.nick, variaveis_globais.instancia, mensagem)
+
+    def get_self(self):
+        return self
 
     def destruir_instancia(self):
         self.abort = 1

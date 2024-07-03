@@ -6,10 +6,28 @@ from kivymd.uix.screen import MDScreen
 from client import Chatter, DaemonThread
 from server import ChatBox
 from telas.listagempessoas.telapessoas import TelaPessoas
-
+import variaveis_globais
 
 class TelaLogin(MDScreen):
     pass
+
+    def retornar_fields(self):
+        input_email = self.ids["email"].text
+        input_senha = self.ids["senha"].text
+        variaveis_globais.email_user = input_email
+        variaveis_globais.senha_user = input_senha
+
+        conn = mysql.connector.connect(**variaveis_globais.config)
+        cursor = conn.cursor()
+
+        try:
+            query = "SELECT count(*) FROM tb_usuario WHERE email = %s AND senha = %s"
+            cursor.execute(query, (input_email, input_senha))
+            dados = cursor.fetchall()
+        except:
+            pass
+        else:
+            variaveis_globais.nome_user = dados[0][0]
 
     # def connect(self):
     #
@@ -36,41 +54,6 @@ class TelaLogin(MDScreen):
     #
     #     except:
     #         toast("Email ou senha inválidos")
-
-    def criar_instancia_user(self):
-
-        config = {
-            'user': 'root',
-            'password': '1234',
-            'host': '127.0.0.1',
-            'database': 'db_dadosRMI',
-        }
-        conn = mysql.connector.connect(**config)
-        cursor = conn.cursor()
-
-        input_email = self.ids["email"].text
-        input_senha = self.ids["senha"].text
-
-        chat_menager = ChatBox()
-        pessoas_cad = chat_menager.getNicks()
-        pessoas = [i[0] for i in pessoas_cad]
-        pessoas_on = chat_menager.get_pessoas_on()
-        pessoas_on = [i[0] for i in pessoas_on]
-        chatter = Chatter()
-        daemonthread = DaemonThread(chatter)
-        daemonthread.start()
-        query = "SELECT nome FROM tb_usuario WHERE email = %s AND senha = %s"
-        cursor.execute(query, (input_email, input_senha))
-        dados = cursor.fetchall()
-        # try:
-        if dados[0][0] in pessoas_on:
-            chat_menager.leave(dados[0][0])
-            chatter.destruir_instancia()
-            chatter.build(pessoas, dados[0][0])
-        else:
-            chatter.build(pessoas, dados[0][0])
-        self.manager.transition.direction = "left"
-        self.manager.current = "pessoas"
         # except:
         #     toast("Email ou senha inválidos")
 

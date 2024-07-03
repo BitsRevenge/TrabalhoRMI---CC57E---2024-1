@@ -21,8 +21,8 @@ import Pyro4
 
 class Chatter(object):
     def __init__(self):
-        ns = Pyro4.locateNS(host="26.16.105.211", port=9090)
-        uri = ns.lookup("example.service")
+        ns = Pyro4.locateNS(host="26.241.131.227")
+        uri = ns.lookup("example.chatbox.server")
         self.chatbox = Pyro4.core.Proxy(uri)
         self.abort = 0
 
