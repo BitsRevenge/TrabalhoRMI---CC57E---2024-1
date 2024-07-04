@@ -1,19 +1,21 @@
-## Estrutura do Projeto
+# RMI-Chat
+Chat coded in python using RMI and sockets
 
-- `telas/`: desenvolvimento das telas.
-- `main.py`: Ponto de partida do programa rodar as telas.
-- `server.py`: Inicializa o servidor.
-  - Rodar `python -m Pyro4.naming`
-- `client.py`: Cria a instancia do cliente.
+Programming language: Python 3.7.0
 
-# Como Executar
+Used libraries:
+	- json
+	- time
+	- socket
+	- threading
+	- pyqt5
+	- Pyro4
 
-1. Certifique-se de ter o Python instalado.
-2. Certifique-se de que tenha colocado a sua senha do `root` de seu MySql no lugar da variável `SENHA` nos arquivos das telas, caso queira utilizá-las.
-3. Instale as dependências:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Execute o a arquivo `main.py`.
 
-   
+run using: python3.7 client.py
+
+Pyro4 and tkinter might not come with your python version, depending on the operation system and/or python distribution.
+
+The program consists in 2 files:
+	- server.py - responsable for creating a 'dns server' to locate the uri and start the chat rooms.
+	- client.py - responsable for discovering the existing chats in the server and connecting the user to the chat room, contains the 'User' class which will create a GUI and interact with the chatroom via RMI and contains the 'Chat' class which manages the interations between the connected users.
